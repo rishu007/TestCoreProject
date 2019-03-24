@@ -48,5 +48,43 @@ namespace TestCore.Controllers
             return todoItem;
         }
 
+        [HttpPost]
+        public async Task<ActionResult<TodoItem>> PostTodoItem([FromBody]TodoItem item)
+        {
+            _context.TodoItems.Add(item);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetTodoItem), new { id = item.Id }, item);
+        }
+
+        [HttpPut("{id}")]
+
+        public async Task<IActionResult> PutTodoItem(long id,[FromBody]TodoItem item)
+        {
+
+            if(id !=item.Id)
+            {
+                return BadRequest();
+            }
+            _context.Entry(item).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTodoItem(long id)
+        {
+            var todoItem = _context.TodoItems.FindAsync(id).Result;
+             
+            if(todoItem==null)
+            {
+                return NotFound();
+            }
+            _context.TodoItems.Remove(todoItem);
+            await _context.SaveChangesAsync();
+            return NoContent();
+
+        }
+
     }
 }
